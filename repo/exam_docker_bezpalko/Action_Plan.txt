@@ -1,0 +1,96 @@
+Examen Docker
+
+Etapes :
+    > Container avec API datascientest...
+    > ... appelable depuis l'extérieur du container, avec appel curl directement depuis une autre console 
+    > Container avec jupyter notebook pour appel avec librairie requests
+    > Génération d'un fichier de log + récupération du fichier depuis la machine hôte
+    > Recopier dans un fichier .py et lancement avec une commande bash
+    > Docker file avec installation python, récupération fichier .py puis commande bash
+    > Fichier yaml pour lancement des deux containers
+    > Deux containers avec jupyter notebook pour test unitaire
+    > Docker file pour les deux containers
+    > Adaptation du yaml avec les deux nouveaux containers 
+
+
+Commandes utiles : 
+> Se déplacer dans le dossier de l'image docker à builder : cd ~/repo/exam_docker_bezpalko/docker_image
+> Récupérer l'adresse IP du container "jupyter" : docker container inspect jupyter | grep IPAddress
+> Récupérer l'adresse IP du container "api" : docker container inspect api_bezpalko | grep IPAddress
+> Vérifier le contenu du volume : sudo ls /var/lib/docker/volumes/exam_docker_bezpalko_volume/_data
+> Se déplacer dans le volume : cd /var/lib/docker/volumes/exam_docker_bezpalko_volume/_data
+> Supprimer le contenu du volume : sudo rm -fr /var/lib/docker/volumes/exam_docker_bezpalko_volume/_data/*
+> Se déplacer dans le dossier du yml docker-compose : cd ~/repo/exam_docker_bezpalko
+> Identifier les process sur le port :8000 : sudo lsof -i :8000
+> Se connecter au volume lancé par docker-compose : cd /var/lib/docker/volumes/exam_docker_bezpalko_exam_docker_bezpalko_volume/_data
+> Supprimer le contenu du volume : sudo rm -fr /var/lib/docker/volumes/exam_docker_bezpalko_exam_docker_bezpalko_volume/_data/*
+> Copier le fichier python dans le volume : 
+cp /home/ubuntu/repo/exam_docker_bezpalko/docker_image_authentication/test_authentication.py\
+/var/lib/docker/volumes/exam_docker_bezpalko_volume/_data
+> Relancer le service docker après perte connexion (il croit que le port 8000 est déjà attribué) : sudo systemctl restart docker
+> Copier les fichiers py dans le volume monté partagé : 
+    > sudo cp ~/repo/exam_docker_bezpalko/docker_image_authentication/test_authentication.py /var/lib/docker/volumes/exam_docker_bezpalko_volume/_data/
+    > sudo cp ~/repo/exam_docker_bezpalko/docker_image_authorization/test_authorization.py /var/lib/docker/volumes/exam_docker_bezpalko_volume/_data/
+    > sudo cp ~/repo/exam_docker_bezpalko/docker_image_content/test_content.py /var/lib/docker/volumes/exam_docker_bezpalko_volume/_data/
+
+
+Etape :
+    > Récupération image API : docker image pull datascientest/fastapi:1.0.0
+    > Lancement container API : 
+        > docker container run -it --rm -p 8000:8000 --name api datascientest/fastapi:1.0.0
+        > IP address : 172.17.0.2
+    > Accès API routes : http://localhost:8000/docs
+        > /status : curl -X 'GET' 'http://localhost:8000/status' -H 'accept: application/json'
+        > /permissions : 
+            Success : curl -X 'GET' 'http://localhost:8000/permissions?username=alice&password=wonderland' -H 'accept: application/json'
+            Failure : curl -X 'GET' 'http://localhost:8000/permissions?username=titi&password=toto' -H 'accept: application/json'
+        > /v1/sentiment : curl -X 'GET' 'http://localhost:8000/v1/sentiment?username=alice&password=wonderland&sentence=I%20love%20you' -H 'accept: application/json'
+        > /v2/sentiment : curl -X 'GET' 'http://localhost:8000/v2/sentiment?username=alice&password=wonderland&sentence=I%20love%20you' -H 'accept: application/json'
+
+Etape :
+    > Lancement container jupyter : 
+        > docker container run -it -d --rm -p 8888:8888 -v /desired/host/folder:/home/jovyan/workspace --name jupyter jupyter/minimal-notebook:ubuntu-18.04
+        > IP address : 172.17.0.3
+        > Attention : la variable d'environnement est interprétée comme une string
+
+Etape : 
+    > Créer un volume : 
+        > Création d'un volume monté : 
+            > docker volume create --name exam_docker_bezpalko_volume
+            > docker volume rm name exam_docker_bezpalko_volume
+        > Inspection module pour récupérer le chemin : 
+            > docker volume inspect exam_docker_bezpalko_volume 
+            > "/var/lib/docker/volumes/exam_docker_bezpalko_volume/_data"
+        > Monter le volume sur le container : 
+            > docker container run -it --name my_ubuntu --mount type=volume,src=exam_docker_bezpalko_volume,dst=/home/ubuntu/api --rm ubuntu:latest bash
+            > liste de commandes :
+                > Rendre le dossier /tmp writable : chmod 1777 /tmp
+                > Installer python : apt-get update && apt-get install python3-pip
+                > Installer requests: pip3 install requests
+    
+Etape :
+    > Se déplacer dans le dossier de l'image docker à builder : cd ~/repo/exam_docker_bezpalko/docker_image
+    > Créer un docker file :
+    > Créer une image à partir du docker file : 
+        > docker image build . -t auth:latest
+        > docker image build . -t image_authentication:latest
+        > docker image build . -t image_authorization:latest
+        > docker image build . -t image_content:latest
+    > Lancer un container à partir de cette image : 
+        docker container run -it --rm --name auth auth:latest bash
+        Version 1 : docker container run -it --rm --network exam_docker_bezpalko_network_bezpalko\
+        --mount type=volume,src=exam_docker_bezpalko_volume,dst=/api \
+        --name auth auth:latest bash
+        Version 2 : docker container run -it --rm \
+        -v $HOME/repo/exam_docker_bezpalko/container_authentication:/api \
+        --name authentication exam_docker_bezpalko_image_authentication:latest bash
+        Version 3 : docker container run -it --rm \
+        -v $HOME/repo/exam_docker_bezpalko/container_authentication:/api \
+        --name authentication exam_docker_bezpalko_image_authentication:latest bash
+
+Etape : 
+    > Créer un fichier docker-compose.yml 
+    > Lancer le compose : 
+        > cd home/ubuntu/repo/exam_docker_bezpalko/
+        > docker-compose up
+    > Cleaner les instances : docker-compose down --remove-orphans

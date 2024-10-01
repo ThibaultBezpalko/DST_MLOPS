@@ -1,0 +1,167 @@
+1. Affichez le nombre d'attributs par document ainsi que l'attribut name. Combien y a-t-il d'attributs par document ? N'affichez que les 12 premières lignes avec la commande head (notebook #2).
+{
+  "name": "Luke Skywalker",
+  "count": 17
+}
+{
+  "name": "C-3PO",
+  "count": 17
+}
+{
+  "name": "R2-D2",
+  "count": 17
+}
+Commande : ~/cat people.json | jq '.[] | {name, count: length}' | head -n 12
+
+---------------------------------
+
+2. Combien y a-t-il de valeur 'unknown' pour l'attribut 'birth_year' ? Utilisez la commande tail afin d'isoler la réponse.
+{
+  "birth_year": "unknown",
+  "count": 42
+}
+Commande : ~/cat people.json | jq "group_by(.birth_year)[] | {gender: .[0].birth_year, count: length, ids: .id[]}" | tail -n 4
+Réponse : 42, la réponse universelle
+
+---------------------------------
+
+3. Affichez la date de création de chaque personnage et son nom. La date de création doit être de cette forme : l'année, le mois et le jour. N'affichez que les 10 premières lignes.
+{
+  "name": "Luke Skywalker",
+  "created": "2014-12-09"
+}
+{
+  "name": "C-3PO",
+  "created": "2014-12-10"
+}
+{
+  "name": "R2-D2",
+Commande : cat ~/people.json | jq ".[] | {name, created: .created[:10]}" | head -n 10
+
+---------------------------------
+
+4. Certains personnages sont nés en même temps. Retrouvez toutes les pairs d'ids (2 ids) des personnages nés en même temps.
+The following characters are born the same year in "19BBY":
+1
+5
+The following characters are born the same year in "41.9BBY":
+4
+11
+The following characters are born the same year in "52BBY":
+6
+36
+The following characters are born the same year in "72BBY":
+43
+51
+The following characters are born the same year in "82BBY":
+21
+62
+The following characters are born the same year in "92BBY":
+32
+52
+Commande : birth_years=`cat ~/people.json | jq "group_by(.birth_year)[] | {birth_year: .[0].birth_year, count: length} | select(.count==2) | .birth_year"`
+for by in $birth_years
+do
+echo "The following characters are born the same year in $by:"
+cat ~/people.json | jq ".[] | {name, id, birth_year} | select(.birth_year==$by) | .id"
+done
+
+---------------------------------
+
+5. Renvoyez le numéro du premier film (de la liste) dans lequel chaque personnage a été vu suivi du nom du personnage. N'affichez que les 10 premières lignes.
+Luke Skywalker appeared the first time in the film n°1.
+C-3PO appeared the first time in the film n°1.
+R2-D2 appeared the first time in the film n°1.
+Darth Vader appeared the first time in the film n°1.
+Leia Organa appeared the first time in the film n°1.
+Owen Lars appeared the first time in the film n°1.
+Beru Whitesun lars appeared the first time in the film n°1.
+R5-D4 appeared the first time in the film n°1.
+Biggs Darklighter appeared the first time in the film n°1.
+Obi-Wan Kenobi appeared the first time in the film n°1.
+Anakin Skywalker appeared the first time in the film n°4.
+Wilhuff Tarkin appeared the first time in the film n°1.
+Chewbacca appeared the first time in the film n°1.
+Han Solo appeared the first time in the film n°1.
+Greedo appeared the first time in the film n°1.
+Jabba Desilijic Tiure appeared the first time in the film n°1.
+Wedge Antilles appeared the first time in the film n°1.
+Jek Tono Porkins appeared the first time in the film n°1.
+Yoda appeared the first time in the film n°2.
+Palpatine appeared the first time in the film n°2.
+Boba Fett appeared the first time in the film n°2.
+IG-88 appeared the first time in the film n°2.
+Bossk appeared the first time in the film n°2.
+Lando Calrissian appeared the first time in the film n°2.
+Lobot appeared the first time in the film n°2.
+Ackbar appeared the first time in the film n°3.
+Mon Mothma appeared the first time in the film n°3.
+Arvel Crynyd appeared the first time in the film n°3.
+Nien Nunb appeared the first time in the film n°3.
+Qui-Gon Jinn appeared the first time in the film n°4.
+Nute Gunray appeared the first time in the film n°4.
+Finis Valorum appeared the first time in the film n°4.
+Padmé Amidala appeared the first time in the film n°4.
+Jar Jar Binks appeared the first time in the film n°4.
+Roos Tarpals appeared the first time in the film n°4.
+Rugor Nass appeared the first time in the film n°4.
+Ric Olié appeared the first time in the film n°4.
+Watto appeared the first time in the film n°4.
+Sebulba appeared the first time in the film n°4.
+Quarsh Panaka appeared the first time in the film n°4.
+Shmi Skywalker appeared the first time in the film n°4.
+Darth Maul appeared the first time in the film n°4.
+Bib Fortuna appeared the first time in the film n°3.
+Dud Bolt appeared the first time in the film n°4.
+Gasgano appeared the first time in the film n°4.
+Ben Quadinaros appeared the first time in the film n°4.
+Mace Windu appeared the first time in the film n°4.
+Ki-Adi-Mundi appeared the first time in the film n°4.
+Kit Fisto appeared the first time in the film n°4.
+Eeth Koth appeared the first time in the film n°4.
+Adi Gallia appeared the first time in the film n°4.
+Saesee Tiin appeared the first time in the film n°4.
+Yarael Poof appeared the first time in the film n°4.
+Plo Koon appeared the first time in the film n°4.
+Mas Amedda appeared the first time in the film n°4.
+Gregar Typho appeared the first time in the film n°5.
+Cordé appeared the first time in the film n°5.
+Cliegg Lars appeared the first time in the film n°5.
+Poggle the Lesser appeared the first time in the film n°5.
+Luminara Unduli appeared the first time in the film n°5.
+Barriss Offee appeared the first time in the film n°5.
+Dormé appeared the first time in the film n°5.
+Dooku appeared the first time in the film n°5.
+Bail Prestor Organa appeared the first time in the film n°5.
+Jango Fett appeared the first time in the film n°5.
+Zam Wesell appeared the first time in the film n°5.
+Dexter Jettster appeared the first time in the film n°5.
+Lama Su appeared the first time in the film n°5.
+Taun We appeared the first time in the film n°5.
+Jocasta Nu appeared the first time in the film n°5.
+R4-P17 appeared the first time in the film n°5.
+Wat Tambor appeared the first time in the film n°5.
+San Hill appeared the first time in the film n°5.
+Shaak Ti appeared the first time in the film n°5.
+Grievous appeared the first time in the film n°6.
+Tarfful appeared the first time in the film n°6.
+Raymus Antilles appeared the first time in the film n°1.
+Sly Moore appeared the first time in the film n°5.
+Tion Medon appeared the first time in the film n°6.
+Finn appeared the first time in the film n°7.
+Rey appeared the first time in the film n°7.
+Poe Dameron appeared the first time in the film n°7.
+BB8 appeared the first time in the film n°7.
+Commande : ids=`cat ~/people.json | jq ".[].id"`
+for id in $ids
+do
+num=`cat ~/people.json | jq ".[] | select(.id==$id) | .films | min"`
+role=`cat ~/people.json | jq ".[] | select(.id==$id) |.name"`
+echo "${role:1:${#role}-2} appeared the first time in the film n°${num: -3:1}.
+
+---------------------------------
+
+
+----------------BONUS----------------
+
+Je m'arrête là car j'ai beaucoup de travail à côté :).

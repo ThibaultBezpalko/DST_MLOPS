@@ -1,0 +1,24 @@
+Bonjour.
+
+Architecture de mes dossiers : 
+
+exam_docker_bezpalko
+    docker_image_authentication
+        Dockerfile
+        test_authentication.py
+    docker_image_authorization
+        Dockerfile
+        test_authorization.py
+    docker_image_content
+        Dockerfile
+        test_content.py
+    docker-compose.yml
+    notes.txt
+    (api-test.log)
+    setup_start.sh
+    setup_end.sh
+    
+Il apparaît que la commande ADD n'est pas utile lorsqu'on monte un volume, qui prend le pas. 
+J'ai donc déposé les 3 fichiers python dans ce volume avant de lancer docker compose.
+
+

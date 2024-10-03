@@ -1,7 +1,0 @@
-Ceci est un exemple de fichier pour git
-Nouvelle ligne pour nouveau commit
-Je vais essayer d'utiliser git revert
-Et puis tenter git reset une fois
-Et une deuxième fois avec le bon commit
-Je suis revenu en arrière
-Je vais faire apparaître l'historique en graph

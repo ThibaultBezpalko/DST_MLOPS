@@ -1,0 +1,116 @@
+
+============================
+    Authentication test
+============================
+
+datetime = 2024-10-03 20:14:00.481362
+
+request done at "/permissions"
+| username="alice"
+| password="wonderland"
+
+expected result = 200
+actual result = 200
+
+==>  SUCCESS
+
+
+============================
+    Authentication test
+============================
+
+datetime = 2024-10-03 20:14:00.492677
+
+request done at "/permissions"
+| username="bob"
+| password="builder"
+
+expected result = 200
+actual result = 200
+
+==>  SUCCESS
+
+
+============================
+    Authentication test
+============================
+
+datetime = 2024-10-03 20:14:00.497842
+
+request done at "/permissions"
+| username="clementine"
+| password="mandarine"
+
+expected result = 200
+actual result = 403
+
+==>  FAILURE
+
+
+============================
+    Authorization test
+============================
+
+datetime = 2024-10-03 20:14:01.789470
+
+request done at "/v1/sentiment"
+| username="alice"
+| password="wonderland"
+| sentence="It's a wonderful world"
+
+expected result = 200
+actual result = 200
+
+==>  SUCCESS
+
+
+============================
+    Authorization test
+============================
+
+datetime = 2024-10-03 20:14:01.796265
+
+request done at "/v2/sentiment"
+| username="alice"
+| password="wonderland"
+| sentence="It's a wonderful world"
+
+expected result = 200
+actual result = 200
+
+==>  SUCCESS
+
+
+============================
+    Authorization test
+============================
+
+datetime = 2024-10-03 20:14:01.804407
+
+request done at "/v1/sentiment"
+| username="bob"
+| password="builder"
+| sentence="It's a wonderful world"
+
+expected result = 200
+actual result = 200
+
+==>  SUCCESS
+
+
+============================
+    Authorization test
+============================
+
+datetime = 2024-10-03 20:14:01.818175
+
+request done at "/v2/sentiment"
+| username="bob"
+| password="builder"
+| sentence="It's a wonderful world"
+
+expected result = 200
+actual result = 403
+
+==>  FAILURE
+

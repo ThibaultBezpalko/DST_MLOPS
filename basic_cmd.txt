@@ -1,0 +1,2 @@
+# find the process listening on a specific port (then kill <PID> if necessary)
+sudo lsof -i :8002
